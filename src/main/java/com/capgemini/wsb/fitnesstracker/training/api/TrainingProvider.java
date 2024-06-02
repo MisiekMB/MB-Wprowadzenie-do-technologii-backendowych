@@ -20,4 +20,12 @@ public interface TrainingProvider {
      * @return List of TrainingDto
      */
     List<TrainingDto> getAllTrainings();
+
+    /**
+     * Creates a new training.
+     *
+     * @param trainingDto the DTO of the training to be created
+     * @return the created TrainingDto
+     */
+    TrainingDto createTraining(TrainingDto trainingDto);
 }
