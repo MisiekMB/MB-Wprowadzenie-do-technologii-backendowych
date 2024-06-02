@@ -7,12 +7,21 @@ import com.capgemini.wsb.fitnesstracker.user.internal.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * Komponent mapujący obiekty {@link Training} na {@link TrainingDto} i odwrotnie.
+ */
 @Component
 @RequiredArgsConstructor
 public class TrainingMapper {
 
     private final UserRepository userRepository;
 
+    /**
+     * Konwertuje obiekt {@link Training} na {@link TrainingDto}.
+     *
+     * @param training obiekt treningu do konwersji
+     * @return obiekt TrainingDto
+     */
     public TrainingDto toDto(Training training) {
         return new TrainingDto(
                 training.getId(),
@@ -25,9 +34,15 @@ public class TrainingMapper {
         );
     }
 
+    /**
+     * Konwertuje obiekt {@link TrainingDto} na {@link Training}.
+     *
+     * @param trainingDto obiekt TrainingDto do konwersji
+     * @return obiekt Training
+     */
     public Training toEntity(TrainingDto trainingDto) {
         User user = userRepository.findById(trainingDto.userId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono użytkownika"));
 
         return new Training(
                 trainingDto.id(),

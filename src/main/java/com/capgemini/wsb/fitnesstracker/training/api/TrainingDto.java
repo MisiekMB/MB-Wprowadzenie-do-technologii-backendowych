@@ -3,9 +3,12 @@ package com.capgemini.wsb.fitnesstracker.training.api;
 import com.capgemini.wsb.fitnesstracker.training.internal.ActivityType;
 import java.util.Date;
 
+/**
+ * Rekord reprezentujący dane transferowe treningu.
+ */
 public record TrainingDto(
         Long id,
-        Long userId,   // Ensure this field is correctly defined
+        Long userId,
         Date startTime,
         Date endTime,
         ActivityType activityType,

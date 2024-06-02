@@ -1,22 +1,31 @@
 package com.capgemini.wsb.fitnesstracker.training.internal;
 
-// TODO : JavaDoc
+import lombok.Getter;
+
+/**
+ * Enum reprezentujący typy aktywności.
+ */
+@Getter
 public enum ActivityType {
 
-    RUNNING("Running"),
-    CYCLING("Cycling"),
-    WALKING("Walking"),
-    SWIMMING("Swimming"),
+    RUNNING("Bieganie"),
+    CYCLING("Jazda na rowerze"),
+    WALKING("Chodzenie"),
+    SWIMMING("Pływanie"),
     TENNIS("Tenis");
 
+    /**
+     * Nazwa wyświetlana dla typu aktywności.
+     */
     private final String displayName;
 
+    /**
+     * Konstruktor przypisujący nazwę wyświetlaną do typu aktywności.
+     *
+     * @param displayName nazwa wyświetlana dla typu aktywności
+     */
     ActivityType(String displayName) {
         this.displayName = displayName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
     }
 
 }

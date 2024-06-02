@@ -3,29 +3,32 @@ package com.capgemini.wsb.fitnesstracker.training.api;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Interfejs dostarczający metody do zarządzania treningami.
+ */
 public interface TrainingProvider {
 
     /**
-     * Retrieves a training based on their ID.
-     * If the training with the given ID is not found, then {@link Optional#empty()} will be returned.
+     * Pobiera trening na podstawie jego ID.
+     * Jeśli trening o podanym ID nie zostanie znaleziony, zwrócony zostanie {@link Optional#empty()}.
      *
-     * @param trainingId id of the training to be searched
-     * @return An {@link Optional} containing the located TrainingDto, or {@link Optional#empty()} if not found
+     * @param trainingId id treningu do wyszukania
+     * @return {@link Optional} zawierający znaleziony TrainingDto, lub {@link Optional#empty()} jeśli nie znaleziono
      */
     Optional<TrainingDto> getTraining(Long trainingId);
 
     /**
-     * Retrieves all trainings.
+     * Pobiera wszystkie treningi.
      *
-     * @return List of TrainingDto
+     * @return Lista obiektów TrainingDto
      */
     List<TrainingDto> getAllTrainings();
 
     /**
-     * Creates a new training.
+     * Tworzy nowy trening.
      *
-     * @param trainingDto the DTO of the training to be created
-     * @return the created TrainingDto
+     * @param trainingDto DTO treningu do utworzenia
+     * @return utworzony TrainingDto
      */
     TrainingDto createTraining(TrainingDto trainingDto);
 }
