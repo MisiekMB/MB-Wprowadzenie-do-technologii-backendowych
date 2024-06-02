@@ -7,21 +7,12 @@ import com.capgemini.wsb.fitnesstracker.user.internal.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-/**
- * Mapper do konwersji pomiędzy encją Training a DTO TrainingDto.
- */
 @Component
 @RequiredArgsConstructor
 public class TrainingMapper {
 
     private final UserRepository userRepository;
 
-    /**
-     * Konwertuje encję Training na DTO TrainingDto.
-     *
-     * @param training encja Training
-     * @return DTO TrainingDto
-     */
     public TrainingDto toDto(Training training) {
         return new TrainingDto(
                 training.getId(),
@@ -34,12 +25,12 @@ public class TrainingMapper {
         );
     }
 
-
     public Training toEntity(TrainingDto trainingDto) {
         User user = userRepository.findById(trainingDto.userId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         return new Training(
+                trainingDto.id(),
                 user,
                 trainingDto.startTime(),
                 trainingDto.endTime(),

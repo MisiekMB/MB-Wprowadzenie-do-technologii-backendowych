@@ -3,6 +3,8 @@ package com.capgemini.wsb.fitnesstracker.training.internal;
 import com.capgemini.wsb.fitnesstracker.training.api.Training;
 import com.capgemini.wsb.fitnesstracker.training.api.TrainingDto;
 import com.capgemini.wsb.fitnesstracker.training.api.TrainingProvider;
+import com.capgemini.wsb.fitnesstracker.user.api.User;
+import com.capgemini.wsb.fitnesstracker.user.internal.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ public class TrainingServiceImpl implements TrainingProvider {
 
     private final TrainingRepository trainingRepository;
     private final TrainingMapper trainingMapper;
+    private final UserRepository userRepository;
 
     @Override
     public Optional<TrainingDto> getTraining(Long trainingId) {
@@ -53,5 +56,37 @@ public class TrainingServiceImpl implements TrainingProvider {
         Training training = trainingMapper.toEntity(trainingDto);
         Training savedTraining = trainingRepository.save(training);
         return trainingMapper.toDto(savedTraining);
+    }
+
+    public TrainingDto updateTraining(Long trainingId, TrainingDto trainingDto) {
+        Optional<Training> existingTrainingOpt = trainingRepository.findById(trainingId);
+        if (existingTrainingOpt.isEmpty()) {
+            throw new IllegalArgumentException("Training not found");
+        }
+
+        Training existingTraining = existingTrainingOpt.get();
+        if (trainingDto.userId() != null) {   // Ensure correct access to userId
+            User user = userRepository.findById(trainingDto.userId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            existingTraining.setUser(user);
+        }
+        if (trainingDto.startTime() != null) {
+            existingTraining.setStartTime(trainingDto.startTime());
+        }
+        if (trainingDto.endTime() != null) {
+            existingTraining.setEndTime(trainingDto.endTime());
+        }
+        if (trainingDto.activityType() != null) {
+            existingTraining.setActivityType(trainingDto.activityType());
+        }
+        if (trainingDto.distance() != 0) {
+            existingTraining.setDistance(trainingDto.distance());
+        }
+        if (trainingDto.averageSpeed() != 0) {
+            existingTraining.setAverageSpeed(trainingDto.averageSpeed());
+        }
+
+        Training updatedTraining = trainingRepository.save(existingTraining);
+        return trainingMapper.toDto(updatedTraining);
     }
 }

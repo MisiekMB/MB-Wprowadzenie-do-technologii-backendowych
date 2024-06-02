@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
  *
  * <p>Ta klasa zapewnia logikę biznesową do zarządzania użytkownikami.</p>
  */
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -28,7 +27,6 @@ class UserServiceImpl implements UserService, UserProvider {
         log.info("Tworzenie użytkownika {}", user);
         if (user.getId() != null) {
             throw new IllegalArgumentException("Użytkownik ma już ID w bazie danych, aktualizacja nie jest dozwolona!");
-
         }
         if (!userRepository.findByEmailContainingIgnoreCase(user.getEmail()).isEmpty()) {
             throw new IllegalArgumentException("Email jest już zajęty!");
@@ -57,10 +55,9 @@ class UserServiceImpl implements UserService, UserProvider {
             userRepository.deleteById(id);
             log.info("Usunięto użytkownika z ID {}", id);
         } else {
-            throw new IllegalArgumentException("Użytkownik z " + id + " nie istnieje.");
+            throw new IllegalArgumentException("Użytkownik z ID " + id + " nie istnieje.");
         }
     }
-
 
     @Override
     public List<BasicUserInfoDto> findAllBasicUserInfo() {
@@ -68,6 +65,7 @@ class UserServiceImpl implements UserService, UserProvider {
                 .map(user -> new BasicUserInfoDto(user.getId(), user.getFirstName(), user.getLastName()))
                 .collect(Collectors.toList());
     }
+
     @Override
     public List<BasicUserEmailDto> findUsersByEmail(String email) {
         return userRepository.findByEmailContainingIgnoreCase(email).stream()
@@ -84,8 +82,7 @@ class UserServiceImpl implements UserService, UserProvider {
     public User updateUser(Long id, UpdateUserDto updateUserDto) {
         Optional<User> existingUserOptional = userRepository.findById(id);
 
-            // Aktualizacja tylko dostarczonych pól
-            if (existingUserOptional.isPresent()) {
+        if (existingUserOptional.isPresent()) {
             User existingUser = existingUserOptional.get();
 
             if (updateUserDto.firstName() != null) {
@@ -103,9 +100,7 @@ class UserServiceImpl implements UserService, UserProvider {
 
             return userRepository.save(existingUser);
         } else {
-            throw new IllegalArgumentException("Użytkownik z ID:  " + id + " nie istnieje.");
+            throw new IllegalArgumentException("Użytkownik z ID: " + id + " nie istnieje.");
         }
     }
-
-
 }

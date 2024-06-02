@@ -9,7 +9,6 @@ import java.util.Optional;
  *
  * <p>Ten interfejs definiuje metody do tworzenia, pobierania, aktualizowania i usuwania użytkowników oraz inne operacje związane z użytkownikami.</p>
  */
-
 public interface UserService {
 
     /**
@@ -27,6 +26,13 @@ public interface UserService {
      * @return {@link Optional} zawierający użytkownika, jeśli znaleziony, w przeciwnym razie pusty
      */
     Optional<User> getUser(Long userId);
+
+    /**
+     * Pobiera użytkownika po jego emailu.
+     *
+     * @param email email użytkownika do pobrania
+     * @return {@link Optional} zawierający użytkownika, jeśli znaleziony, w przeciwnym razie pusty
+     */
     Optional<User> getUserByEmail(String email);
 
     /**
@@ -35,7 +41,6 @@ public interface UserService {
      * @return lista wszystkich użytkowników
      */
     List<User> findAllUsers();
-
 
     /**
      * Usuwa użytkownika po jego ID.
@@ -75,5 +80,4 @@ public interface UserService {
      * @return zaktualizowany użytkownik
      */
     User updateUser(Long id, UpdateUserDto updateUserDto);
-
 }
