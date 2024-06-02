@@ -6,6 +6,7 @@ import com.capgemini.wsb.fitnesstracker.training.api.TrainingProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,6 +34,12 @@ public class TrainingServiceImpl implements TrainingProvider {
 
     public List<TrainingDto> getTrainingsByUserId(Long userId) {
         return trainingRepository.findByUserId(userId).stream()
+                .map(trainingMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<TrainingDto> getTrainingsByEndDateAfter(Date endDate) {
+        return trainingRepository.findByEndTimeAfter(endDate).stream()
                 .map(trainingMapper::toDto)
                 .collect(Collectors.toList());
     }

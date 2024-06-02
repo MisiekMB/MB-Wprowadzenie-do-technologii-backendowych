@@ -2,8 +2,10 @@ package com.capgemini.wsb.fitnesstracker.training.internal;
 
 import com.capgemini.wsb.fitnesstracker.training.api.TrainingDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -21,6 +23,11 @@ public class TrainingController {
     @GetMapping("/user/{userId}")
     public List<TrainingDto> getTrainingsByUserId(@PathVariable Long userId) {
         return trainingService.getTrainingsByUserId(userId);
+    }
+
+    @GetMapping("/ended-after")
+    public List<TrainingDto> getTrainingsByEndDateAfter(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+        return trainingService.getTrainingsByEndDateAfter(endDate);
     }
 
     @PostMapping("/{userId}")
