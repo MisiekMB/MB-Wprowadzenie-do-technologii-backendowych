@@ -1,16 +1,32 @@
 package com.capgemini.wsb.fitnesstracker.training.internal;
 
+import com.capgemini.wsb.fitnesstracker.training.api.Training;
+import com.capgemini.wsb.fitnesstracker.training.api.TrainingDto;
 import com.capgemini.wsb.fitnesstracker.training.api.TrainingProvider;
-import com.capgemini.wsb.fitnesstracker.user.api.User;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-// TODO: Provide Impl
+@Service
+@RequiredArgsConstructor
 public class TrainingServiceImpl implements TrainingProvider {
 
+    private final TrainingRepository trainingRepository;
+    private final TrainingMapper trainingMapper;
+
     @Override
-    public Optional<User> getTraining(final Long trainingId) {
-        throw new UnsupportedOperationException("Not finished yet");
+    public Optional<TrainingDto> getTraining(Long trainingId) {
+        return trainingRepository.findById(trainingId)
+                .map(trainingMapper::toDto);
     }
 
+    @Override
+    public List<TrainingDto> getAllTrainings() {
+        return trainingRepository.findAll().stream()
+                .map(trainingMapper::toDto)
+                .collect(Collectors.toList());
+    }
 }

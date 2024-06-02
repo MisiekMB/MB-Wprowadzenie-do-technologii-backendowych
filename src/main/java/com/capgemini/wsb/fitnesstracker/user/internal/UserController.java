@@ -1,9 +1,7 @@
 package com.capgemini.wsb.fitnesstracker.user.internal;
 
-import com.capgemini.wsb.fitnesstracker.user.api.BasicUserEmailDto;
-import com.capgemini.wsb.fitnesstracker.user.api.BasicUserInfoDto;
-import com.capgemini.wsb.fitnesstracker.user.api.UpdateUserDto;
-import com.capgemini.wsb.fitnesstracker.user.api.User;
+import com.capgemini.wsb.fitnesstracker.user.api.*;
+import com.capgemini.wsb.fitnesstracker.user.api.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +31,7 @@ class UserController {
      * @return lista wszystkich użytkowników
      */
     @GetMapping
-    public List<UserDto> getAllUsers() {
+    public List<com.capgemini.wsb.fitnesstracker.user.api.UserDto> getAllUsers() {
         return userService.findAllUsers()
                 .stream()
                 .map(userMapper::toDto)

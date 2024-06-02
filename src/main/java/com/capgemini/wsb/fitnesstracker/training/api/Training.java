@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Date;
+
 @Entity
 @Table(name = "trainings")
 @Getter
