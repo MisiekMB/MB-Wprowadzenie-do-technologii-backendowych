@@ -1,14 +1,21 @@
 package com.capgemini.wsb.fitnesstracker.user.internal;
 
-import com.capgemini.wsb.fitnesstracker.user.api.User;
-import com.capgemini.wsb.fitnesstracker.user.api.UserProvider;
-import com.capgemini.wsb.fitnesstracker.user.api.UserService;
+import com.capgemini.wsb.fitnesstracker.user.api.*;
+import com.capgemini.wsb.fitnesstracker.user.api.UserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+/**
+ * Implementacja interfejsu {@link UserService}.
+ *
+ * <p>Ta klasa zapewnia logikę biznesową do zarządzania użytkownikami.</p>
+ */
 
 @Service
 @RequiredArgsConstructor
@@ -19,9 +26,13 @@ class UserServiceImpl implements UserService, UserProvider {
 
     @Override
     public User createUser(final User user) {
-        log.info("Creating User {}", user);
+        log.info("Tworzenie użytkownika {}", user);
         if (user.getId() != null) {
-            throw new IllegalArgumentException("User has already DB ID, update is not permitted!");
+            throw new IllegalArgumentException("Użytkownik ma już ID w bazie danych, aktualizacja nie jest dozwolona!");
+
+        }
+        if (!userRepository.findByEmailContainingIgnoreCase(user.getEmail()).isEmpty()) {
+            throw new IllegalArgumentException("Email jest już zajęty!");
         }
         return userRepository.save(user);
     }
@@ -51,18 +62,51 @@ class UserServiceImpl implements UserService, UserProvider {
         }
     }
 
+
     @Override
-    public User updateUser(Long id, User user) {
-        Optional<User> existingUser = userRepository.findById(id);
-        if (existingUser.isPresent()) {
-            User updatedUser = existingUser.get();
-            updatedUser.setFirstName(user.getFirstName());
-            updatedUser.setLastName(user.getLastName());
-            updatedUser.setBirthdate(user.getBirthdate());
-            updatedUser.setEmail(user.getEmail());
-            return userRepository.save(updatedUser);
+    public List<BasicUserInfoDto> findAllBasicUserInfo() {
+        return userRepository.findAll().stream()
+                .map(user -> new BasicUserInfoDto(user.getId(), user.getFirstName(), user.getLastName()))
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<BasicUserEmailDto> findUsersByEmail(String email) {
+        return userRepository.findByEmailContainingIgnoreCase(email).stream()
+                .map(user -> new BasicUserEmailDto(user.getId(), user.getEmail()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> findAllUsersOlderThen(final LocalDate time) {
+        return userRepository.findAllUsersOlderThen(time);
+    }
+
+    @Override
+    public User updateUser(Long id, UpdateUserDto updateUserDto) {
+        Optional<User> existingUserOptional = userRepository.findById(id);
+
+            // Aktualizacja tylko dostarczonych pól
+            if (existingUserOptional.isPresent()) {
+            User existingUser = existingUserOptional.get();
+
+            if (updateUserDto.firstName() != null) {
+                existingUser.setFirstName(updateUserDto.firstName());
+            }
+            if (updateUserDto.lastName() != null) {
+                existingUser.setLastName(updateUserDto.lastName());
+            }
+            if (updateUserDto.birthdate() != null) {
+                existingUser.setBirthdate(updateUserDto.birthdate());
+            }
+            if (updateUserDto.email() != null) {
+                existingUser.setEmail(updateUserDto.email());
+            }
+
+            return userRepository.save(existingUser);
         } else {
-            throw new IllegalArgumentException("Użytkownik z ID: " + id + " nie istnieje.");
+            throw new IllegalArgumentException("Użytkownik z ID:  " + id + " nie istnieje.");
         }
     }
+
+
 }

@@ -16,6 +16,12 @@ import java.time.LocalDate;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Reprezentuje użytkownika w systemie.
+ *
+ * <p>Ta encja przechowuje podstawowe informacje o użytkowniku.</p>
+ */
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -40,6 +46,15 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    /**
+     * Tworzy nowego użytkownika z określonymi danymi.
+     *
+     * @param firstName imię użytkownika
+     * @param lastName nazwisko użytkownika
+     * @param birthdate data urodzenia użytkownika
+     * @param email email użytkownika
+     */
 
     public User(
             final String firstName,
