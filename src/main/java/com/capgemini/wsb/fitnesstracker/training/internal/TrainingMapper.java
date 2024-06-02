@@ -34,12 +34,7 @@ public class TrainingMapper {
         );
     }
 
-    /**
-     * Konwertuje DTO TrainingDto na encję Training.
-     *
-     * @param trainingDto DTO TrainingDto
-     * @return encja Training
-     */
+
     public Training toEntity(TrainingDto trainingDto) {
         User user = userRepository.findById(trainingDto.userId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));

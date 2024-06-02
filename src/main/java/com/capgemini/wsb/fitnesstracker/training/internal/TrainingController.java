@@ -18,6 +18,11 @@ public class TrainingController {
         return trainingService.getAllTrainings();
     }
 
+    @GetMapping("/user/{userId}")
+    public List<TrainingDto> getTrainingsByUserId(@PathVariable Long userId) {
+        return trainingService.getTrainingsByUserId(userId);
+    }
+
     @PostMapping("/{userId}")
     public TrainingDto createTraining(@PathVariable Long userId, @RequestBody TrainingDto trainingDto) {
         TrainingDto newTrainingDto = new TrainingDto(

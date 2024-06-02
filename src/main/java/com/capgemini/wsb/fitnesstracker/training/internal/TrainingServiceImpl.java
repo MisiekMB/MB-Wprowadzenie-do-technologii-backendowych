@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,14 @@ public class TrainingServiceImpl implements TrainingProvider {
     public List<TrainingDto> getAllTrainings() {
         return trainingRepository.findAll().stream()
                 .map(trainingMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
+    }
+
+
+    public List<TrainingDto> getTrainingsByUserId(Long userId) {
+        return trainingRepository.findByUserId(userId).stream()
+                .map(trainingMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public TrainingDto createTraining(TrainingDto trainingDto) {
