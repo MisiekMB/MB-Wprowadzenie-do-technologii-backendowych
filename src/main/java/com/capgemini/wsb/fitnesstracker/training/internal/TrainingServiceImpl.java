@@ -31,7 +31,6 @@ public class TrainingServiceImpl implements TrainingProvider {
                 .collect(Collectors.toList());
     }
 
-
     public List<TrainingDto> getTrainingsByUserId(Long userId) {
         return trainingRepository.findByUserId(userId).stream()
                 .map(trainingMapper::toDto)
@@ -40,6 +39,12 @@ public class TrainingServiceImpl implements TrainingProvider {
 
     public List<TrainingDto> getTrainingsByEndDateAfter(Date endDate) {
         return trainingRepository.findByEndTimeAfter(endDate).stream()
+                .map(trainingMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<TrainingDto> getTrainingsByActivityType(ActivityType activityType) {
+        return trainingRepository.findByActivityType(activityType).stream()
                 .map(trainingMapper::toDto)
                 .collect(Collectors.toList());
     }
