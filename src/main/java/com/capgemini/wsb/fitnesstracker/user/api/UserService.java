@@ -5,78 +5,76 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Interfejs serwisu do zarządzania użytkownikami.
- *
- * <p>Ten interfejs definiuje metody do tworzenia, pobierania, aktualizowania i usuwania użytkowników oraz inne operacje związane z użytkownikami.</p>
+ * Interfejs serwisu do zarządzania użytkownikami w systemie.
  */
 public interface UserService {
 
     /**
      * Tworzy nowego użytkownika.
      *
-     * @param user użytkownik do utworzenia
+     * @param user obiekt użytkownika do utworzenia
      * @return utworzony użytkownik
      */
     User createUser(User user);
 
     /**
-     * Pobiera użytkownika po jego ID.
+     * Zwraca opcjonalnego użytkownika na podstawie jego identyfikatora.
      *
-     * @param userId ID użytkownika do pobrania
-     * @return {@link Optional} zawierający użytkownika, jeśli znaleziony, w przeciwnym razie pusty
+     * @param userId identyfikator użytkownika
+     * @return opcjonalny użytkownik
      */
     Optional<User> getUser(Long userId);
 
     /**
-     * Pobiera użytkownika po jego emailu.
+     * Zwraca opcjonalnego użytkownika na podstawie jego adresu email.
      *
-     * @param email email użytkownika do pobrania
-     * @return {@link Optional} zawierający użytkownika, jeśli znaleziony, w przeciwnym razie pusty
+     * @param email adres email użytkownika
+     * @return opcjonalny użytkownik
      */
     Optional<User> getUserByEmail(String email);
 
     /**
-     * Pobiera wszystkich użytkowników.
+     * Zwraca listę wszystkich użytkowników.
      *
      * @return lista wszystkich użytkowników
      */
     List<User> findAllUsers();
 
     /**
-     * Usuwa użytkownika po jego ID.
+     * Usuwa użytkownika na podstawie jego identyfikatora.
      *
-     * @param id ID użytkownika do usunięcia
+     * @param id identyfikator użytkownika
      */
     void deleteUser(Long id);
 
     /**
-     * Pobiera podstawowe informacje o wszystkich użytkownikach.
+     * Zwraca listę wszystkich użytkowników zawierających podstawowe informacje.
      *
-     * @return lista podstawowych informacji o użytkownikach
+     * @return lista podstawowych informacji o wszystkich użytkownikach
      */
     List<BasicUserInfoDto> findAllBasicUserInfo();
 
     /**
-     * Wyszukuje użytkowników po ich emailu.
+     * Znajduje użytkowników na podstawie fragmentu ich adresu email.
      *
-     * @param email email do wyszukania
-     * @return lista użytkowników pasujących do emailu
+     * @param email fragment adresu email
+     * @return lista użytkowników pasujących do podanego fragmentu email
      */
     List<BasicUserEmailDto> findUsersByEmail(String email);
 
     /**
-     * Znajduje wszystkich użytkowników starszych niż określony wiek.
+     * Zwraca listę wszystkich użytkowników starszych niż podana data.
      *
-     * @param time wiek do porównania
-     * @return lista użytkowników starszych niż określony wiek
+     * @param time data graniczna
+     * @return lista użytkowników starszych niż podana data
      */
     List<User> findAllUsersOlderThen(LocalDate time);
 
     /**
-     * Aktualizuje użytkownika.
+     * Aktualizuje dane użytkownika na podstawie jego identyfikatora i obiektu DTO zawierającego nowe dane.
      *
-     * @param id ID użytkownika do aktualizacji
-     * @param updateUserDto dane użytkownika do aktualizacji
+     * @param id identyfikator użytkownika
+     * @param updateUserDto obiekt DTO zawierający nowe dane użytkownika
      * @return zaktualizowany użytkownik
      */
     User updateUser(Long id, UpdateUserDto updateUserDto);
