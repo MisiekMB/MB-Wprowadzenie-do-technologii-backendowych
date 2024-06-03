@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "e6528853-eaed-4445-87a0-10191913aa9a",
-		"name": "SPRING PROJECT",
+		"name": "SPRING LAB 1",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "35947143"
 	},
@@ -93,7 +93,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"firstName\": \"UpdatedFirstName\",\r\n    \"lastName\": \"UpdatedLastName\",\r\n    \"birthdate\": \"1990-01-01\",\r\n    \"email\": \"updated.email@example.com\"\r\n}\r\n",
+					"raw": "{\r\n    \"firstName\": \"UpdatedFirstName\",\r\n    \"lastName\": \"UpdatedLastName\",\r\n    \"birthdate\": \"2000-01-01\",\r\n    \"email\": \"updated.email@example.com\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
