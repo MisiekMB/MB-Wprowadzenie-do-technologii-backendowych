@@ -30,6 +30,9 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
     @Autowired
     private MockMvc mockMvc;
 
+    /**
+     * Testuje zwracanie wszystkich sesji treningowych.
+     */
     @Test
     void shouldReturnAllTrainings_whenGettingAllTrainings() throws Exception {
 
@@ -45,16 +48,16 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$[0].user.firstName").value(user1.getFirstName()))
                 .andExpect(jsonPath("$[0].user.lastName").value(user1.getLastName()))
                 .andExpect(jsonPath("$[0].user.email").value(user1.getEmail()))
-
-
                 .andExpect(jsonPath("$[0].startTime").value(sdf.format(training1.getStartTime())))
                 .andExpect(jsonPath("$[0].endTime").value(sdf.format(training1.getEndTime())))
                 .andExpect(jsonPath("$[0].distance").value((training1.getDistance())))
                 .andExpect(jsonPath("$[0].averageSpeed").value(training1.getAverageSpeed()))
-
                 .andExpect(jsonPath("$[1]").doesNotExist());
     }
 
+    /**
+     * Testuje zwracanie wszystkich sesji treningowych dla danego użytkownika.
+     */
     @Test
     void shouldReturnAllTrainingsForDedicatedUser_whenGettingAllTrainingsForDedicatedUser() throws Exception {
 
@@ -74,10 +77,12 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$[0].endTime").value(sdf.format(training1.getEndTime())))
                 .andExpect(jsonPath("$[0].distance").value((training1.getDistance())))
                 .andExpect(jsonPath("$[0].averageSpeed").value(training1.getAverageSpeed()))
-
-                .andExpect(jsonPath("$[1]").doesNotExist());;
+                .andExpect(jsonPath("$[1]").doesNotExist());
     }
 
+    /**
+     * Testuje zwracanie wszystkich zakończonych sesji treningowych po określonym czasie.
+     */
     @Test
     void shouldReturnAllFinishedTrainingsAfterTime_whenGettingAllFinishedTrainingsAfterTime() throws Exception {
 
@@ -102,6 +107,9 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$[1]").doesNotExist());
     }
 
+    /**
+     * Testuje zwracanie wszystkich sesji treningowych dla określonego typu aktywności.
+     */
     @Test
     void getAllTrainingByActivityType_whenGettingAllTrainingByActivityType() throws Exception {
 
@@ -124,10 +132,12 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$[1].user.lastName").value(user1.getLastName()))
                 .andExpect(jsonPath("$[1].user.email").value(user1.getEmail()))
                 .andExpect(jsonPath("$[1].activityType").value(training3.getActivityType().toString()))
-
                 .andExpect(jsonPath("$[2]").doesNotExist());
     }
 
+    /**
+     * Testuje tworzenie nowej sesji treningowej.
+     */
     @Test
     void shouldPersistTraining_whenCreatingNewTraining() throws Exception {
 
@@ -152,9 +162,11 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.user.email").value(user1.getEmail()))
                 .andExpect(jsonPath("$.distance").value(10.52))
                 .andExpect(jsonPath("$.averageSpeed").value(8.2));
-
     }
 
+    /**
+     * Testuje aktualizację istniejącej sesji treningowej.
+     */
     @Test
     void shouldUpdateTraining_whenUpdatingTraining() throws Exception {
 
@@ -182,10 +194,22 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.averageSpeed").value(0.0));
     }
 
+    /**
+     * Generuje użytkownika dla testów.
+     *
+     * @return wygenerowany użytkownik
+     */
     private static User generateClient() {
         return new User(randomUUID().toString(), randomUUID().toString(), now(), randomUUID().toString());
     }
 
+    /**
+     * Generuje sesję treningową dla testów.
+     *
+     * @param user użytkownik
+     * @return wygenerowana sesja treningowa
+     * @throws ParseException wyjątek parsowania daty
+     */
     private static Training generateTraining(User user) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -198,6 +222,14 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
                 8.2);
     }
 
+    /**
+     * Generuje sesję treningową z określonym typem aktywności dla testów.
+     *
+     * @param user użytkownik
+     * @param activityType typ aktywności
+     * @return wygenerowana sesja treningowa
+     * @throws ParseException wyjątek parsowania daty
+     */
     private static Training generateTrainingWithActivityType(User user, ActivityType activityType) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -209,6 +241,18 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
                 0, 0);
     }
 
+    /**
+     * Generuje sesję treningową z określonymi szczegółami dla testów.
+     *
+     * @param user użytkownik
+     * @param startTime czas rozpoczęcia
+     * @param endTime czas zakończenia
+     * @param activityType typ aktywności
+     * @param distance dystans
+     * @param averageSpeed średnia prędkość
+     * @return wygenerowana sesja treningowa
+     * @throws ParseException wyjątek parsowania daty
+     */
     private static Training generateTrainingWithDetails(User user, String startTime, String endTime, ActivityType activityType, double distance, double averageSpeed) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -220,7 +264,4 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
                 distance,
                 averageSpeed);
     }
-
-
 }
-

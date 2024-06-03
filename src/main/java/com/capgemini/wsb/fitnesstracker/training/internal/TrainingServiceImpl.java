@@ -1,157 +1,112 @@
 package com.capgemini.wsb.fitnesstracker.training.internal;
 
 import com.capgemini.wsb.fitnesstracker.training.api.Training;
-import com.capgemini.wsb.fitnesstracker.training.api.TrainingDto;
 import com.capgemini.wsb.fitnesstracker.training.api.TrainingProvider;
-import com.capgemini.wsb.fitnesstracker.user.api.User;
-import com.capgemini.wsb.fitnesstracker.user.internal.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
- * Implementacja serwisu zarządzającego treningami.
+ * Implementacja serwisu do zarządzania sesjami treningowymi.
  */
 @Service
 @RequiredArgsConstructor
 public class TrainingServiceImpl implements TrainingProvider {
 
     private final TrainingRepository trainingRepository;
-    private final TrainingMapper trainingMapper;
-    private final UserRepository userRepository;
 
     /**
-     * Pobiera trening na podstawie jego ID.
+     * Zwraca listę wszystkich sesji treningowych.
      *
-     * @param trainingId identyfikator treningu
-     * @return opcjonalny TrainingDto, jeśli znaleziono
+     * @return lista wszystkich sesji treningowych
      */
     @Override
-    public Optional<TrainingDto> getTraining(Long trainingId) {
-        return trainingRepository.findById(trainingId)
-                .map(trainingMapper::toDto);
+    public List<Training> getAllTrainings() {
+        return trainingRepository.findAll();
     }
 
     /**
-     * Pobiera wszystkie treningi.
-     *
-     * @return lista wszystkich TrainingDto
-     */
-    @Override
-    public List<TrainingDto> getAllTrainings() {
-        return trainingRepository.findAll().stream()
-                .map(trainingMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Pobiera treningi dla użytkownika na podstawie jego ID.
+     * Zwraca listę sesji treningowych dla danego użytkownika.
      *
      * @param userId identyfikator użytkownika
-     * @return lista TrainingDto dla użytkownika
+     * @return lista sesji treningowych dla danego użytkownika
      */
-    public List<TrainingDto> getTrainingsByUserId(Long userId) {
-        return trainingRepository.findByUserId(userId).stream()
-                .map(trainingMapper::toDto)
-                .collect(Collectors.toList());
+    public List<Training> getTrainingsByUserId(Long userId) {
+        return trainingRepository.findByUserId(userId);
     }
 
     /**
-     * Pobiera treningi zakończone po podanej dacie.
+     * Zwraca listę sesji treningowych zakończonych po podanej dacie.
      *
-     * @param endDate data zakończenia
-     * @return lista TrainingDto zakończonych po podanej dacie
+     * @param endDate data, po której sesje treningowe powinny być zakończone
+     * @return lista sesji treningowych zakończonych po podanej dacie
      */
-    public List<TrainingDto> getTrainingsByEndDateAfter(Date endDate) {
-        return trainingRepository.findByEndTimeAfter(endDate).stream()
-                .map(trainingMapper::toDto)
-                .collect(Collectors.toList());
+    public List<Training> getTrainingsByEndDateAfter(Date endDate) {
+        return trainingRepository.findByEndTimeAfter(endDate);
     }
 
     /**
-     * Pobiera treningi dla podanego typu aktywności.
+     * Zwraca listę sesji treningowych dla danego typu aktywności.
      *
      * @param activityType typ aktywności
-     * @return lista TrainingDto dla podanego typu aktywności
+     * @return lista sesji treningowych dla danego typu aktywności
      */
-    public List<TrainingDto> getTrainingsByActivityType(ActivityType activityType) {
-        return trainingRepository.findByActivityType(activityType).stream()
-                .map(trainingMapper::toDto)
-                .collect(Collectors.toList());
+    public List<Training> getTrainingsByActivityType(ActivityType activityType) {
+        return trainingRepository.findByActivityType(activityType);
     }
 
     /**
-     * Tworzy nowy trening.
+     * Tworzy nową sesję treningową.
      *
-     * @param trainingDto DTO treningu do utworzenia
-     * @return utworzony TrainingDto
-     * @throws IllegalArgumentException jeśli użytkownik nie został znaleziony
+     * @param training obiekt sesji treningowej do utworzenia
+     * @return utworzona sesja treningowa
      */
-    public TrainingDto createTraining(TrainingDto trainingDto) {
-        if (trainingDto == null || trainingDto.activityType() == null || trainingDto.startTime() == null || trainingDto.endTime() == null) {
-            throw new IllegalArgumentException("Nieprawidłowe dane treningu");
-        }
-
-        User user = userRepository.findById(trainingDto.userId())
-                .orElseThrow(() -> new IllegalArgumentException("Użytkownik nie został znaleziony"));
-
-        Training training = trainingMapper.toEntity(trainingDto);
-        training.setUser(user);
-
-        Training savedTraining = trainingRepository.save(training);
-        return trainingMapper.toDto(savedTraining);
+    @Override
+    @Transactional
+    public Training createTraining(Training training) {
+        return trainingRepository.save(training);
     }
-
-
 
     /**
-     * Aktualizuje istniejący trening na podstawie jego ID.
+     * Aktualizuje istniejącą sesję treningową.
      *
-     * @param trainingId identyfikator treningu
-     * @param trainingDto DTO treningu do zaktualizowania
-     * @return zaktualizowany TrainingDto
-     * @throws IllegalArgumentException jeśli trening lub użytkownik nie został znaleziony
+     * @param trainingId identyfikator sesji treningowej do aktualizacji
+     * @param trainingDto obiekt DTO zawierający zaktualizowane dane sesji treningowej
+     * @return zaktualizowana sesja treningowa
      */
-    public TrainingDto updateTraining(Long trainingId, TrainingDto trainingDto) {
-        Optional<Training> existingTrainingOpt = trainingRepository.findById(trainingId);
-        if (existingTrainingOpt.isEmpty()) {
-            throw new IllegalArgumentException("Trening nie został znaleziony");
-        }
-
-        Training existingTraining = existingTrainingOpt.get();
-        if (trainingDto.userId() != null) {   // sprawdzenie, czy użytkownik został podany
-            User user = userRepository.findById(trainingDto.userId())
-                    .orElseThrow(() -> new IllegalArgumentException("Użytkownik nie został znaleziony"));
-            existingTraining.setUser(user);
-        }
-        if (trainingDto.startTime() != null) {
-            existingTraining.setStartTime(trainingDto.startTime());
-        }
-        if (trainingDto.endTime() != null) {
-            existingTraining.setEndTime(trainingDto.endTime());
-        }
-        if (trainingDto.activityType() != null) {
-            existingTraining.setActivityType(trainingDto.activityType());
-        }
-        if (trainingDto.distance() != 0) {
-            existingTraining.setDistance(trainingDto.distance());
-        }
-        if (trainingDto.averageSpeed() != 0) {
-            existingTraining.setAverageSpeed(trainingDto.averageSpeed());
-        }
-
-        Training updatedTraining = trainingRepository.save(existingTraining);
-        return trainingMapper.toDto(updatedTraining);
-    }
-
-    public void deleteTraining(Long trainingId) {
+    @Override
+    @Transactional
+    public Training updateTraining(Long trainingId, TrainingDto trainingDto) {
         Training training = trainingRepository.findById(trainingId)
-                .orElseThrow(() -> new IllegalArgumentException("Trening nie został znaleziony"));
-        trainingRepository.delete(training);
-    }
+                .orElseThrow(() -> new RuntimeException("Training with ID=%s was not found".formatted(trainingId)));
 
+        if (trainingDto.getUser() != null) {
+            training.setUser(trainingDto.getUser());
+        }
+
+        if (trainingDto.getStartTime() != null) {
+            training.setStartTime(trainingDto.getStartTime());
+        }
+
+        if (trainingDto.getEndTime() != null) {
+            training.setEndTime(trainingDto.getEndTime());
+        }
+
+        if (trainingDto.getActivityType() != null) {
+            training.setActivityType(trainingDto.getActivityType());
+        }
+
+        if (trainingDto.getDistance() != null) {
+            training.setDistance(trainingDto.getDistance());
+        }
+
+        if (trainingDto.getAverageSpeed() != null) {
+            training.setAverageSpeed(trainingDto.getAverageSpeed());
+        }
+
+        return trainingRepository.save(training);
+    }
 }

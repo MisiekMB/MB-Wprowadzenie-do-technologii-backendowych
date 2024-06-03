@@ -1,31 +1,32 @@
 package com.capgemini.wsb.fitnesstracker.training.internal;
 
 import com.capgemini.wsb.fitnesstracker.training.api.Training;
-import com.capgemini.wsb.fitnesstracker.training.api.TrainingDto;
-import com.capgemini.wsb.fitnesstracker.user.api.User;
-import com.capgemini.wsb.fitnesstracker.user.internal.UserRepository;
+import com.capgemini.wsb.fitnesstracker.user.internal.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * Komponent mapujący obiekty {@link Training} na {@link TrainingDto} i odwrotnie.
+ * Komponent mapujący dane pomiędzy encjami Training, TrainingDto i TrainingSupportDto.
  */
 @Component
 @RequiredArgsConstructor
 public class TrainingMapper {
 
-    private final UserRepository userRepository;
+    /**
+     * Serwis użytkownika, używany do zarządzania danymi użytkowników.
+     */
+    public final UserServiceImpl userService;
 
     /**
-     * Konwertuje obiekt {@link Training} na {@link TrainingDto}.
+     * Mapuje encję Training na obiekt TrainingDto.
      *
-     * @param training obiekt treningu do konwersji
+     * @param training encja Training
      * @return obiekt TrainingDto
      */
-    public TrainingDto toDto(Training training) {
+    public TrainingDto toTrainingDto(Training training) {
         return new TrainingDto(
                 training.getId(),
-                training.getUser() != null ? training.getUser().getId() : null,
+                training.getUser(),
                 training.getStartTime(),
                 training.getEndTime(),
                 training.getActivityType(),
@@ -35,23 +36,38 @@ public class TrainingMapper {
     }
 
     /**
-     * Konwertuje obiekt {@link TrainingDto} na {@link Training}.
+     * Mapuje obiekt TrainingDto na encję Training.
      *
-     * @param trainingDto obiekt TrainingDto do konwersji
-     * @return obiekt Training
+     * @param trainingDto obiekt TrainingDto
+     * @return encja Training
      */
-    public Training toEntity(TrainingDto trainingDto) {
-        User user = userRepository.findById(trainingDto.userId())
-                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono użytkownika"));
-
+    public Training toTrainingEntity(TrainingDto trainingDto) {
         return new Training(
-                trainingDto.id(),
-                user,
-                trainingDto.startTime(),
-                trainingDto.endTime(),
-                trainingDto.activityType(),
-                trainingDto.distance(),
-                trainingDto.averageSpeed()
+                trainingDto.getUser(),
+                trainingDto.getStartTime(),
+                trainingDto.getEndTime(),
+                trainingDto.getActivityType(),
+                trainingDto.getDistance(),
+                trainingDto.getAverageSpeed()
+        );
+    }
+
+    /**
+     * Mapuje obiekt TrainingSupportDto na obiekt TrainingDto.
+     *
+     * @param trainingSupportDto obiekt TrainingSupportDto
+     * @return obiekt TrainingDto
+     */
+    public TrainingDto toTrainingFromTrainingSupportDto(TrainingSupportDto trainingSupportDto) {
+        return new TrainingDto(
+                trainingSupportDto.getId(),
+                trainingSupportDto.getUser(),
+                trainingSupportDto.getStartTime(),
+                trainingSupportDto.getEndTime(),
+                trainingSupportDto.getActivityType(),
+                trainingSupportDto.getDistance(),
+                trainingSupportDto.getAverageSpeed()
         );
     }
 }
+

@@ -8,24 +8,25 @@ import lombok.*;
 import java.util.Date;
 
 /**
- * Klasa reprezentująca trening.
+ * Klasa reprezentująca sesję treningową.
  */
 @Entity
 @Table(name = "trainings")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @ToString
 public class Training {
 
     /**
-     * Unikalny identyfikator treningu.
+     * Unikalny identyfikator sesji treningowej.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
-     * Użytkownik powiązany z treningiem.
+     * Użytkownik powiązany z tą sesją treningową.
      */
     @Setter
     @ManyToOne
@@ -33,21 +34,21 @@ public class Training {
     private User user;
 
     /**
-     * Czas rozpoczęcia treningu.
+     * Czas rozpoczęcia sesji treningowej.
      */
     @Setter
     @Column(name = "start_time", nullable = false)
     private Date startTime;
 
     /**
-     * Czas zakończenia treningu.
+     * Czas zakończenia sesji treningowej.
      */
     @Setter
     @Column(name = "end_time", nullable = false)
     private Date endTime;
 
     /**
-     * Typ aktywności podczas treningu.
+     * Rodzaj aktywności wykonywanej podczas sesji treningowej.
      */
     @Setter
     @Enumerated(EnumType.ORDINAL)
@@ -55,56 +56,28 @@ public class Training {
     private ActivityType activityType;
 
     /**
-     * Przebyty dystans podczas treningu.
+     * Dystans pokonany podczas sesji treningowej, w kilometrach.
      */
     @Setter
     @Column(name = "distance")
     private double distance;
 
     /**
-     * Średnia prędkość podczas treningu.
+     * Średnia prędkość podczas sesji treningowej, w kilometrach na godzinę.
      */
     @Setter
     @Column(name = "average_speed")
     private double averageSpeed;
 
     /**
-     * Konstruktor tworzący nowy obiekt treningu z wszystkimi polami.
+     * Konstruktor tworzący nową instancję Training.
      *
-     * @param id          unikalny identyfikator treningu
-     * @param user        użytkownik powiązany z treningiem
-     * @param startTime   czas rozpoczęcia treningu
-     * @param endTime     czas zakończenia treningu
-     * @param activityType typ aktywności podczas treningu
-     * @param distance    przebyty dystans podczas treningu
-     * @param averageSpeed średnia prędkość podczas treningu
-     */
-    public Training(
-            Long id,
-            final User user,
-            final Date startTime,
-            final Date endTime,
-            final ActivityType activityType,
-            final double distance,
-            final double averageSpeed) {
-        this.id = id;
-        this.user = user;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.activityType = activityType;
-        this.distance = distance;
-        this.averageSpeed = averageSpeed;
-    }
-
-    /**
-     * Konstruktor tworzący nowy obiekt treningu bez identyfikatora.
-     *
-     * @param user        użytkownik powiązany z treningiem
-     * @param startTime   czas rozpoczęcia treningu
-     * @param endTime     czas zakończenia treningu
-     * @param activityType typ aktywności podczas treningu
-     * @param distance    przebyty dystans podczas treningu
-     * @param averageSpeed średnia prędkość podczas treningu
+     * @param user użytkownik powiązany z sesją treningową
+     * @param startTime czas rozpoczęcia sesji treningowej
+     * @param endTime czas zakończenia sesji treningowej
+     * @param activityType rodzaj aktywności wykonywanej podczas sesji treningowej
+     * @param distance dystans pokonany podczas sesji treningowej
+     * @param averageSpeed średnia prędkość podczas sesji treningowej
      */
     public Training(
             final User user,

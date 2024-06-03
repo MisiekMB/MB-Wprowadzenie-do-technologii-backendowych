@@ -1,97 +1,117 @@
 package com.capgemini.wsb.fitnesstracker.training.internal;
 
-import com.capgemini.wsb.fitnesstracker.training.api.TrainingDto;
-import com.capgemini.wsb.fitnesstracker.training.internal.ActivityType;
+import com.capgemini.wsb.fitnesstracker.training.api.Training;
+import com.capgemini.wsb.fitnesstracker.user.api.User;
+import com.capgemini.wsb.fitnesstracker.user.api.UserNotFoundException;
+import com.capgemini.wsb.fitnesstracker.user.api.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * Kontroler obsługujący żądania dotyczące treningów.
- */
 @RestController
 @RequestMapping("/v1/trainings")
 @RequiredArgsConstructor
 public class TrainingController {
 
     private final TrainingServiceImpl trainingService;
+    private final TrainingMapper trainingMapper;
+    private final UserService userService;
 
     /**
-     * Pobiera wszystkie treningi.
+     * Zwraca listę wszystkich sesji treningowych.
      *
-     * @return lista obiektów TrainingDto
+     * @return lista wszystkich sesji treningowych
      */
     @GetMapping
     public List<TrainingDto> getAllTrainings() {
-        return trainingService.getAllTrainings();
+        return trainingService.getAllTrainings().stream()
+                .map(trainingMapper::toTrainingDto)
+                .collect(Collectors.toList());
     }
 
     /**
-     * Pobiera wszystkie treningi użytkownika na podstawie jego ID.
+     * Zwraca listę sesji treningowych dla konkretnego użytkownika.
      *
      * @param userId identyfikator użytkownika
-     * @return lista obiektów TrainingDto dla użytkownika
+     * @return lista sesji treningowych dla danego użytkownika
      */
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}")
     public List<TrainingDto> getTrainingsByUserId(@PathVariable Long userId) {
-        return trainingService.getTrainingsByUserId(userId);
+        return trainingService.getTrainingsByUserId(userId).stream()
+                .map(trainingMapper::toTrainingDto)
+                .collect(Collectors.toList());
     }
 
     /**
-     * Pobiera wszystkie treningi zakończone po określonej dacie.
+     * Zwraca listę sesji treningowych zakończonych po podanej dacie.
      *
-     * @param endDate data zakończenia
-     * @return lista obiektów TrainingDto zakończonych po określonej dacie
+     * @param date data, po której sesje treningowe powinny być zakończone
+     * @return lista sesji treningowych zakończonych po podanej dacie
      */
-    @GetMapping("/ended-after")
-    public List<TrainingDto> getTrainingsByEndDateAfter(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
-        return trainingService.getTrainingsByEndDateAfter(endDate);
+    @GetMapping("/finished/{date}")
+    public List<TrainingDto> getTrainingsByEndDateAfter(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
+        return trainingService.getTrainingsByEndDateAfter(date).stream()
+                .map(trainingMapper::toTrainingDto)
+                .collect(Collectors.toList());
     }
 
     /**
-     * Pobiera wszystkie treningi dla określonego typu aktywności.
+     * Zwraca listę sesji treningowych dla danego typu aktywności.
      *
      * @param activityType typ aktywności
-     * @return lista obiektów TrainingDto dla określonego typu aktywności
+     * @return lista sesji treningowych dla danego typu aktywności
      */
-    @GetMapping("/activity")
-    public List<TrainingDto> getTrainingsByActivityType(@RequestParam("type") ActivityType activityType) {
-        return trainingService.getTrainingsByActivityType(activityType);
+    @GetMapping("/activityType")
+    public List<TrainingDto> getTrainingsByActivityType(@RequestParam ActivityType activityType) {
+        return trainingService.getTrainingsByActivityType(activityType).stream()
+                .map(trainingMapper::toTrainingDto)
+                .collect(Collectors.toList());
     }
 
     /**
-     * Tworzy nowy trening dla użytkownika.
+     * Tworzy nową sesję treningową.
      *
-     * @param userId identyfikator użytkownika
-     * @param trainingDto obiekt TrainingDto reprezentujący nowy trening
-     * @return utworzony obiekt TrainingDto
+     * @param trainingSupportDto obiekt DTO zawierający dane nowej sesji treningowej
+     * @return odpowiedź z utworzoną sesją treningową
      */
-    @PostMapping("/{userId}")
-    public TrainingDto createTraining(@PathVariable Long userId, @RequestBody TrainingDto trainingDto) {
-        TrainingDto newTrainingDto = new TrainingDto(
-                null, // ID zostanie wygenerowane przez bazę danych
-                userId,
-                trainingDto.startTime(),
-                trainingDto.endTime(),
-                trainingDto.activityType(),
-                trainingDto.distance(),
-                trainingDto.averageSpeed()
-        );
-        return trainingService.createTraining(newTrainingDto);
+    @PostMapping
+    public ResponseEntity<TrainingDto> createTraining(@RequestBody TrainingSupportDto trainingSupportDto) {
+        User user = userService.getUser(trainingSupportDto.getUserId())
+                .orElseThrow(() -> new UserNotFoundException("Użytkownik nie istnieje."));
+        TrainingDto trainingDto = trainingMapper.toTrainingFromTrainingSupportDto(trainingSupportDto);
+        trainingDto.setUser(user);
+        Training training = trainingMapper.toTrainingEntity(trainingDto);
+        TrainingDto newTraining = trainingMapper.toTrainingDto(trainingService.createTraining(training));
+        return new ResponseEntity<>(newTraining, HttpStatus.CREATED);
     }
 
+
     /**
-     * Aktualizuje istniejący trening na podstawie jego ID.
+     * Aktualizuje istniejącą sesję treningową.
      *
-     * @param trainingId identyfikator treningu
-     * @param trainingDto obiekt TrainingDto reprezentujący zaktualizowany trening
-     * @return zaktualizowany obiekt TrainingDto
+     * @param trainingDto obiekt DTO zawierający zaktualizowane dane sesji treningowej
+     * @param trainingId identyfikator sesji treningowej do aktualizacji
+     * @return zaktualizowana sesja treningowa
      */
     @PutMapping("/{trainingId}")
-    public TrainingDto updateTraining(@PathVariable Long trainingId, @RequestBody TrainingDto trainingDto) {
-        return trainingService.updateTraining(trainingId, trainingDto);
+    public TrainingDto updateTraining(@RequestBody TrainingDto trainingDto, @PathVariable Long trainingId) {
+        Training updatedTraining = trainingService.updateTraining(trainingId, trainingDto);
+        return trainingMapper.toTrainingDto(updatedTraining);
+    }
+
+    /**
+     * Obsługuje wyjątki typu UserNotFoundException.
+     *
+     * @param ex wyjątek
+     * @return odpowiedź z komunikatem błędu i statusem NOT_FOUND
+     */
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

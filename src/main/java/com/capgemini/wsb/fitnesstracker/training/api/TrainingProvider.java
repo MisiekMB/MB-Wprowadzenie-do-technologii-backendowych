@@ -1,34 +1,43 @@
 package com.capgemini.wsb.fitnesstracker.training.api;
 
+import com.capgemini.wsb.fitnesstracker.training.internal.TrainingDto;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 /**
- * Interfejs dostarczający metody do zarządzania treningami.
+ * Interfejs definiujący metody do zarządzania sesjami treningowymi.
  */
 public interface TrainingProvider {
 
     /**
-     * Pobiera trening na podstawie jego ID.
-     * Jeśli trening o podanym ID nie zostanie znaleziony, zwrócony zostanie {@link Optional#empty()}.
+     * Zwraca listę wszystkich sesji treningowych.
      *
-     * @param trainingId id treningu do wyszukania
-     * @return {@link Optional} zawierający znaleziony TrainingDto, lub {@link Optional#empty()} jeśli nie znaleziono
+     * @return lista wszystkich sesji treningowych
      */
-    Optional<TrainingDto> getTraining(Long trainingId);
+    List<Training> getAllTrainings();
 
     /**
-     * Pobiera wszystkie treningi.
+     * Aktualizuje istniejącą sesję treningową.
      *
-     * @return Lista obiektów TrainingDto
+     * @param trainingId identyfikator sesji treningowej do aktualizacji
+     * @param trainingDto obiekt DTO zawierający zaktualizowane dane sesji treningowej
+     * @return zaktualizowana sesja treningowa
      */
-    List<TrainingDto> getAllTrainings();
+    Training updateTraining(Long trainingId, TrainingDto trainingDto);
 
     /**
-     * Tworzy nowy trening.
+     * Zwraca listę sesji treningowych zakończonych po podanej dacie.
      *
-     * @param trainingDto DTO treningu do utworzenia
-     * @return utworzony TrainingDto
+     * @param endDate data, po której sesje treningowe powinny być zakończone
+     * @return lista sesji treningowych zakończonych po podanej dacie
      */
-    TrainingDto createTraining(TrainingDto trainingDto);
+    List<Training> getTrainingsByEndDateAfter(Date endDate);
+
+    /**
+     * Tworzy nową sesję treningową.
+     *
+     * @param training obiekt sesji treningowej do utworzenia
+     * @return utworzona sesja treningowa
+     */
+    Training createTraining(Training training);
 }

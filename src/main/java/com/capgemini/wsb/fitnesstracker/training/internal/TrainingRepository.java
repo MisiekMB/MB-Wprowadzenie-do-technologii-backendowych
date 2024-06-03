@@ -2,36 +2,39 @@ package com.capgemini.wsb.fitnesstracker.training.internal;
 
 import com.capgemini.wsb.fitnesstracker.training.api.Training;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
 
 /**
- * Repozytorium JPA do zarządzania encjami {@link Training}.
+ * Interfejs repozytorium do zarządzania sesjami treningowymi.
  */
 public interface TrainingRepository extends JpaRepository<Training, Long> {
 
     /**
-     * Znajduje wszystkie treningi zakończone po podanej dacie.
+     * Znajduje wszystkie sesje treningowe, które zakończyły się po podanej dacie.
      *
-     * @param endDate data, po której treningi powinny się zakończyć
-     * @return lista treningów zakończonych po podanej dacie
+     * @param endDate data, po której sesje treningowe powinny być zakończone
+     * @return lista sesji treningowych zakończonych po podanej dacie
      */
     List<Training> findByEndTimeAfter(Date endDate);
 
     /**
-     * Znajduje wszystkie treningi dla użytkownika o podanym identyfikatorze.
+     * Znajduje wszystkie sesje treningowe dla danego użytkownika.
      *
      * @param userId identyfikator użytkownika
-     * @return lista treningów dla użytkownika o podanym identyfikatorze
+     * @return lista sesji treningowych dla danego użytkownika
      */
-    List<Training> findByUserId(Long userId);
+    @Query("SELECT t FROM Training t WHERE t.user.id = :userId")
+    List<Training> findByUserId(@Param("userId") Long userId);
 
     /**
-     * Znajduje wszystkie treningi dla podanego typu aktywności.
+     * Znajduje wszystkie sesje treningowe dla danego typu aktywności.
      *
      * @param activityType typ aktywności
-     * @return lista treningów dla podanego typu aktywności
+     * @return lista sesji treningowych dla danego typu aktywności
      */
     List<Training> findByActivityType(ActivityType activityType);
 }

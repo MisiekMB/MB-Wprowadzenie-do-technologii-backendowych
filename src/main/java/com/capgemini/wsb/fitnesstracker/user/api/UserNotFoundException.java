@@ -1,19 +1,10 @@
 package com.capgemini.wsb.fitnesstracker.user.api;
 
-import com.capgemini.wsb.fitnesstracker.exception.api.NotFoundException;
-
 /**
- * Exception indicating that the {@link User} was not found.
+ * Wyjątek rzucany, gdy użytkownik nie zostanie znaleziony.
  */
-@SuppressWarnings("squid:S110")
-public class UserNotFoundException extends NotFoundException {
-
-    private UserNotFoundException(String message) {
+public class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException(String message) {
         super(message);
     }
-
-    public UserNotFoundException(Long id) {
-        this("User with ID=%s was not found".formatted(id));
-    }
-
 }
