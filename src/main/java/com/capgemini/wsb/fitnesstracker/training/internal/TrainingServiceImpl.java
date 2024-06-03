@@ -89,12 +89,19 @@ public class TrainingServiceImpl implements TrainingProvider {
      *
      * @param trainingDto DTO treningu do utworzenia
      * @return utworzony TrainingDto
+     * @throws IllegalArgumentException jeśli użytkownik nie został znaleziony
      */
     public TrainingDto createTraining(TrainingDto trainingDto) {
+        User user = userRepository.findById(trainingDto.userId())
+                .orElseThrow(() -> new IllegalArgumentException("Użytkownik nie został znaleziony"));
+
         Training training = trainingMapper.toEntity(trainingDto);
+        training.setUser(user);
+
         Training savedTraining = trainingRepository.save(training);
         return trainingMapper.toDto(savedTraining);
     }
+
 
     /**
      * Aktualizuje istniejący trening na podstawie jego ID.
@@ -135,4 +142,11 @@ public class TrainingServiceImpl implements TrainingProvider {
         Training updatedTraining = trainingRepository.save(existingTraining);
         return trainingMapper.toDto(updatedTraining);
     }
+
+    public void deleteTraining(Long trainingId) {
+        Training training = trainingRepository.findById(trainingId)
+                .orElseThrow(() -> new IllegalArgumentException("Trening nie został znaleziony"));
+        trainingRepository.delete(training);
+    }
+
 }
