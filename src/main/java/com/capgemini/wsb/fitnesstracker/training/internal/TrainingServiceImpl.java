@@ -92,6 +92,10 @@ public class TrainingServiceImpl implements TrainingProvider {
      * @throws IllegalArgumentException jeśli użytkownik nie został znaleziony
      */
     public TrainingDto createTraining(TrainingDto trainingDto) {
+        if (trainingDto == null || trainingDto.activityType() == null || trainingDto.startTime() == null || trainingDto.endTime() == null) {
+            throw new IllegalArgumentException("Nieprawidłowe dane treningu");
+        }
+
         User user = userRepository.findById(trainingDto.userId())
                 .orElseThrow(() -> new IllegalArgumentException("Użytkownik nie został znaleziony"));
 
@@ -101,6 +105,7 @@ public class TrainingServiceImpl implements TrainingProvider {
         Training savedTraining = trainingRepository.save(training);
         return trainingMapper.toDto(savedTraining);
     }
+
 
 
     /**
