@@ -38,7 +38,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"startTime\": \"2024-06-01T10:00:00\",\r\n    \"endTime\": \"2024-06-01T11:00:00\",\r\n    \"activityType\": \"RUNNING\",\r\n    \"distance\": 5.0,\r\n    \"averageSpeed\": 10.0\r\n}",
+					"raw": "{\r\n    \"userId\": 1,\r\n    \"startTime\": \"2024-06-01T10:00:00\",\r\n    \"endTime\": \"2024-06-01T11:00:00\",\r\n    \"activityType\": \"RUNNING\",\r\n    \"distance\": 5.0,\r\n    \"averageSpeed\": 10.0\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -46,7 +46,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/v1/trainings/1",
+					"raw": "http://localhost:8080/v1/trainings",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -54,8 +54,7 @@
 					"port": "8080",
 					"path": [
 						"v1",
-						"trainings",
-						"1"
+						"trainings"
 					]
 				}
 			},
@@ -67,7 +66,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/v1/trainings/user/1",
+					"raw": "http://localhost:8080/v1/trainings/1\n",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -76,8 +75,7 @@
 					"path": [
 						"v1",
 						"trainings",
-						"user",
-						"1"
+						"1\n"
 					]
 				}
 			},
@@ -89,7 +87,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/v1/trainings/ended-after?date=2024-01-15",
+					"raw": "http://localhost:8080/v1/trainings/finished/2024-01-15\n",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -98,13 +96,8 @@
 					"path": [
 						"v1",
 						"trainings",
-						"ended-after"
-					],
-					"query": [
-						{
-							"key": "date",
-							"value": "2024-01-15"
-						}
+						"finished",
+						"2024-01-15\n"
 					]
 				}
 			},
@@ -116,7 +109,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/v1/trainings/activity?type=RUNNING",
+					"raw": "http://localhost:8080/v1/trainings/activityType?activityType=RUNNING\n",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -125,12 +118,12 @@
 					"path": [
 						"v1",
 						"trainings",
-						"activity"
+						"activityType"
 					],
 					"query": [
 						{
-							"key": "type",
-							"value": "RUNNING"
+							"key": "activityType",
+							"value": "RUNNING\n"
 						}
 					]
 				}
@@ -141,10 +134,15 @@
 			"name": "Update training",
 			"request": {
 				"method": "PUT",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "    {\r\n        \"id\": 11,\r\n        \"userId\": 1,\r\n        \"startTime\": \"2024-06-01T10:00:00.000+00:00\",\r\n        \"endTime\": \"2024-06-01T11:00:00.000+00:00\",\r\n        \"activityType\": \"WALKING\",\r\n        \"distance\": 10.0,\r\n        \"averageSpeed\": 10.0\r\n    }",
+					"raw": "{\r\n    \"id\": 11,\r\n    \"userId\": 1,\r\n    \"startTime\": \"2024-06-01T10:00:00.000+00:00\",\r\n    \"endTime\": \"2024-06-01T11:00:00.000+00:00\",\r\n    \"activityType\": \"WALKING\",\r\n    \"distance\": 10.0,\r\n    \"averageSpeed\": 10.0\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
